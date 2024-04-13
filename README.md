@@ -1,1 +1,1 @@
-# react-search-input-poc
+# React Search Input
