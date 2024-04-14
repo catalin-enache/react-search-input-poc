@@ -8,7 +8,7 @@ import './SearchForm.css';
 
 const SearchForm = () => {
   const [showAutoComplete, setShowAutoComplete] = useState(true);
-  const [useServer, setUseServer] = useState(true);
+  const [useServer, setUseServer] = useState(false);
   const [selectedValue, setSelectedValue] = useState('start');
 
   const handleShowAutoCompleteChange = useCallback(
