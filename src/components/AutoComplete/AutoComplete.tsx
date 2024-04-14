@@ -15,7 +15,7 @@ import { combineRefs } from 'lib/combineRefs';
 import searchIconUrl from 'srcAssets/search.svg';
 import './AutoComplete.css';
 
-const DEBOUNCE_DELAY = 500;
+const DEBOUNCE_DELAY = 300;
 
 const formatHint = (highlights: string) => (hint: string) => (
   <span dangerouslySetInnerHTML={{ __html: highlightText(hint, highlights) }} />

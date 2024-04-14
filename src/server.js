@@ -26,7 +26,10 @@ app.post('/get-hints', (req, res) => {
   }
   const inputString = req.body.inputString;
   const hints = generateHints(inputString);
-  res.json({ inputString, hints });
+  // Simulate a delay of 300ms
+  setTimeout(() => {
+    res.json({ inputString, hints });
+  }, 300);
 });
 
 // Start the server
