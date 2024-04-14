@@ -5,3 +5,7 @@
 .searchForm__selectedValueContainer {
 
 }
+
+.searchForm__autocompleteContainer {
+  height: 60px;
+}

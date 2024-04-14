@@ -1,10 +1,18 @@
-import { memo, useState, useCallback, ChangeEvent } from 'react';
-import AutoComplete from 'src/components/AutoComplete';
+import {
+  memo,
+  useState,
+  useCallback,
+  ChangeEvent,
+  Suspense,
+  lazy
+} from 'react';
 import {
   getHints,
   generateFakeHints
 } from 'components/Forms/SearchForm/getHints';
 import './SearchForm.css';
+
+const AutoComplete = lazy(() => import('src/components/AutoComplete'));
 
 const SearchForm = () => {
   const [showAutoComplete, setShowAutoComplete] = useState(true);
@@ -52,20 +60,21 @@ const SearchForm = () => {
             />
           </label>
         </div>
-        <div className="searchForm__selectedValueContainer">
-          Search value: {selectedValue}
-        </div>
       </div>
-
-      {showAutoComplete && (
-        <div>
-          <AutoComplete
-            value={selectedValue}
-            onChange={handleOnSelectedValueChange}
-            getHints={useServer ? getHints : generateFakeHints}
-          />
-        </div>
-      )}
+      <div className="searchForm__autocompleteContainer">
+        {showAutoComplete && (
+          <Suspense fallback={<div>Loading...</div>}>
+            <AutoComplete
+              value={selectedValue}
+              onChange={handleOnSelectedValueChange}
+              getHints={useServer ? getHints : generateFakeHints}
+            />
+          </Suspense>
+        )}
+      </div>
+      <div className="searchForm__selectedValueContainer">
+        Search value: {selectedValue}
+      </div>
     </div>
   );
 };
