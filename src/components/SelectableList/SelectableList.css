@@ -1,0 +1,28 @@
+.selectableList {
+  display: none;
+  padding: 0;
+  margin: 0;
+}
+
+.selectableList--visible {
+  display: block;
+}
+
+.selectableList li {
+  padding: 0 8px;
+  margin: 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.selectableList li:not(:last-child) {
+  margin-bottom: 2px;
+}
+
+.selectableList li:hover {
+  background-color: #efefef;
+}
+
+.selectableList__item--selected {
+  background-color: #eeeeee;
+}

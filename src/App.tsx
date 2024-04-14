@@ -1,13 +1,15 @@
 import { memo } from 'react';
-import InputSearch from 'components/InputSearch/InputSearch';
+import SearchForm from 'components/Forms/SearchForm';
 import ErrorBoundary from 'components/ErrorBoundary';
+import './App.css';
 
 const App = () => {
   return (
-    <div>
-      <h1>Search</h1>
+    <div className="app">
       <ErrorBoundary>
-        <InputSearch value={'6'} onChange={() => {}} />
+        <div className="app__searchFormContainer">
+          <SearchForm />
+        </div>
       </ErrorBoundary>
     </div>
   );

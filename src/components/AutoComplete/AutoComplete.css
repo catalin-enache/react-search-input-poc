@@ -1,0 +1,38 @@
+.autoComplete {
+  position: relative;
+}
+
+.autoComplete__input {
+  width: 100%;
+  height: var(--formInputHeight);
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: var(--borderRadius);
+  font-size: 16px;
+  outline: none;
+}
+
+.autoComplete__input--withHints {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+
+.autoComplete__hints {
+  position: absolute;
+  display: none;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-bottom-left-radius: var(--borderRadius);
+  border-bottom-right-radius: var(--borderRadius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.autoComplete__hints--visible {
+  display: block;
+}
