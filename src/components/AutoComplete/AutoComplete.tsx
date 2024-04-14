@@ -199,7 +199,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
               <input
                 ref={combinedRef}
                 className={`autoComplete__input ${shouldShowHints ? 'autoComplete__input--withHints' : ''}`}
-                type="text"
+                type="search" // type search adds a native clear button
                 value={internalValue}
                 onChange={handleInputChange}
                 placeholder="Search..."
