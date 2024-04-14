@@ -19,7 +19,6 @@ const SearchForm = () => {
   );
 
   const handleOnSelectedValueChange = useCallback((selectedValue: string) => {
-    console.log('SearchForm handleOnSelectedValueChange', selectedValue);
     setSelectedValue(selectedValue);
   }, []);
 

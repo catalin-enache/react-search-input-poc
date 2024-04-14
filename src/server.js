@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { getRandomChars } from './lib/getRandomChars.js';
 const app = express();
 const PORT = 3000;
 
@@ -13,9 +14,9 @@ app.use(
 
 function generateHints(inputString) {
   return [
-    `${inputString || 'default hint 1'} ###`,
-    `### ${inputString || 'default hint 2'} ###`,
-    `### ${inputString || 'default hint 3'}`
+    `${inputString || 'default hint 1'} ${getRandomChars(3)}`,
+    `${getRandomChars(3)} ${inputString || 'default hint 2'} ${getRandomChars(3)}`,
+    `${getRandomChars(3)} ${inputString || 'default hint 3'}`
   ];
 }
 

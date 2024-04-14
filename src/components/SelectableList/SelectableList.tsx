@@ -19,38 +19,33 @@ const SelectableList = ({
 }: SelectableListProps) => {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-  useEffect(() => {
-    if (!selectedItem) return;
-    onSelect(selectedItem);
-  }, [onSelect, selectedItem]);
-
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      // prevent sending out selectedItem by arrow nav when hidden
+      if (!isVisible) return;
       switch (e.key) {
         case 'ArrowDown': {
           e.preventDefault(); // prevents cursor from moving to the beginning/ending of the input
-          // const index = !selectedItem ? -1 : items.indexOf(selectedItem);
-          // console.log('ArrowDown', index, selectedItem);
-          // setSelectedItem(items[(index + 1) % items.length]);
+          const index = !selectedItem ? -1 : items.indexOf(selectedItem);
+          const newSelectedItem = items[(index + 1) % items.length];
+          setSelectedItem(newSelectedItem);
+          onSelect(newSelectedItem);
           break;
         }
         case 'ArrowUp': {
           e.preventDefault();
-          // const index = !selectedItem
-          //   ? items.length
-          //   : items.indexOf(selectedItem);
-          // setSelectedItem(items[(index - 1 + items.length) % items.length]);
-          break;
-        }
-        case 'Enter': {
-          // if (selectedItem) {
-          //   onSelect(selectedItem);
-          // }
+          const index = !selectedItem
+            ? items.length
+            : items.indexOf(selectedItem);
+          const newSelectedItem =
+            items[(index - 1 + items.length) % items.length];
+          setSelectedItem(newSelectedItem);
+          onSelect(newSelectedItem);
           break;
         }
       }
     },
-    [selectedItem, items, onSelect]
+    [onSelect, selectedItem, items, isVisible]
   );
 
   useEffect(() => {
@@ -68,8 +63,8 @@ const SelectableList = ({
         <li
           key={item.id}
           onPointerDown={() => {
-            console.log('onPointerDown', item);
             setSelectedItem(item);
+            onSelect(item);
           }}
           className={`selectableList__item ${selectedItem === item ? 'selectableList__item--selected' : ''}`}
           dangerouslySetInnerHTML={{

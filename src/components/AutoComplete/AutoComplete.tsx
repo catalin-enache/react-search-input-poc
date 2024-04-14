@@ -1,8 +1,9 @@
 import { ChangeEvent, useState, useCallback, useEffect, useRef } from 'react';
 import { useDebounce } from 'lib/hooks/useDebounce';
 import SelectableList, { Item } from 'components/SelectableList';
-import './AutoComplete.css';
 import { useIsFirstRender } from 'lib/hooks/useIsFirstRender';
+import { useIsMounted } from 'lib/hooks/useIsMounted';
+import './AutoComplete.css';
 
 const DEBOUNCE_DELAY = 500;
 
@@ -20,7 +21,7 @@ const AutoComplete = ({
   onChange
 }: AutoCompleteProps) => {
   const [internalValue, setInternalValue] = useState('');
-  const [selectedValue, setSelectedValue] = useState<string | null>(null);
+  const [selectedValue, setSelectedValue] = useState<string>(value);
   const [debouncedValue, setDebouncedValueNoDelay] = useState(internalValue);
   const setDebouncedValue = useDebounce(
     setDebouncedValueNoDelay,
@@ -31,28 +32,17 @@ const AutoComplete = ({
   const [hints, setHints] = useState<Item[]>([]);
   const shouldLookForHints = useRef(false);
   const hasReceivedNewValue = useRef(internalValue !== value);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const isFirstRender = useIsFirstRender();
+  const isMounted = useIsMounted();
 
   hasReceivedNewValue.current = internalValue !== value;
 
   useEffect(() => {
+    if (debouncedValue === internalValue) return;
     setDebouncedValue(internalValue);
-  }, [setDebouncedValue, internalValue]);
-
-  // retrieving hints for debouncedValue
-  useEffect(() => {
-    if (!shouldLookForHints.current) return;
-    // TODO: add a loader here
-    console.log('looking for hints for new debouncedValue', {
-      debouncedValue
-    });
-    // we only need to trim here
-    getHints?.(debouncedValue.trim()).then((hints) => {
-      console.log('received hints', hints);
-      setHints(hints.map((hint) => ({ id: hint, value: hint })));
-    });
-  }, [setHints, getHints, debouncedValue]);
+  }, [setDebouncedValue, internalValue, debouncedValue]);
 
   const setSelectedValueAndSync = useCallback((value: string) => {
     setSelectedValue(value);
@@ -62,19 +52,33 @@ const AutoComplete = ({
 
   // Submitting selectedValue (which can be a hint, or the value that user typed in)
   useEffect(() => {
-    if (selectedValue === null) return;
-    // no hints needed for submitted value
-    shouldLookForHints.current = false;
     // setSelectedValue from inside setSelectedValueAndSync is redundant (since we just received it),
     // but it doesn't matter for the sake of reusability
     setSelectedValueAndSync(selectedValue);
     onChange?.(selectedValue); // submitting
-    setHasInputFocus(false);
   }, [onChange, selectedValue, setSelectedValueAndSync]);
 
+  const doGetHints = useCallback(
+    (valueToGetHintsFor: string) => {
+      setIsLoading(true);
+      // we only need to trim here
+      getHints?.(valueToGetHintsFor.trim()).then((hints) => {
+        if (!isMounted.current) return;
+        setHints(hints.map((hint) => ({ id: hint, value: hint })));
+        setIsLoading(false);
+      });
+      shouldLookForHints.current = false;
+    },
+    [getHints, isMounted]
+  );
+
+  // retrieving hints for debouncedValue
+  useEffect(() => {
+    if (!shouldLookForHints.current) return;
+    doGetHints(debouncedValue);
+  }, [setHints, getHints, debouncedValue, doGetHints]);
+
   const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    // we only want to look for hints when user is typing
-    // (not when we programmatically set the final value, when user selects a hint)
     shouldLookForHints.current = true;
     setHasInputFocus(true);
     setInternalValue(e.target.value);
@@ -92,25 +96,26 @@ const AutoComplete = ({
     }
   }, [value, isFirstRender]);
 
-  const handlePointerUp = useCallback(
-    (evt: PointerEvent) => {
-      if (
-        evt.target !== inputRef.current &&
-        document.activeElement !== inputRef.current
-      ) {
-        setHasInputFocus(false);
-        // we don't want to also blur here because the mouse can be on input
-        setSelectedValueAndSync(internalValue);
-      }
-    },
-    [setSelectedValueAndSync, internalValue]
-  );
-
-  const handlePointerDown = useCallback((evt: PointerEvent) => {
-    if (evt.target === inputRef.current) {
-      setHasInputFocus(true);
+  const handlePointerUp = useCallback((evt: PointerEvent) => {
+    if (
+      evt.target !== inputRef.current &&
+      document.activeElement !== inputRef.current
+    ) {
+      setHasInputFocus(false);
     }
   }, []);
+
+  const handlePointerDown = useCallback(
+    (evt: PointerEvent) => {
+      setHasInputFocus(evt.target === inputRef.current);
+      shouldLookForHints.current = evt.target !== inputRef.current;
+      if (shouldLookForHints.current) {
+        setSelectedValueAndSync(internalValue);
+        doGetHints(internalValue);
+      }
+    },
+    [internalValue, setSelectedValueAndSync, doGetHints]
+  );
 
   useEffect(() => {
     document.addEventListener('pointerdown', handlePointerDown);
@@ -130,7 +135,9 @@ const AutoComplete = ({
   const handleKeyDown = useCallback(
     (evt: KeyboardEvent) => {
       if (evt.key === 'Enter') {
-        setSelectedValueAndSync(internalValue); // TODO: work here, we need to shoe default hints for empty value
+        shouldLookForHints.current = true;
+        setSelectedValueAndSync(internalValue);
+        doGetHints(internalValue);
         if (inputRef.current === document.activeElement) {
           if (hasInputFocus) {
             // We're not closing here the dropdown if the input is empty
@@ -143,7 +150,7 @@ const AutoComplete = ({
         }
       }
     },
-    [setSelectedValueAndSync, internalValue, hasInputFocus]
+    [setSelectedValueAndSync, internalValue, hasInputFocus, doGetHints]
   );
 
   useEffect(() => {
@@ -153,16 +160,18 @@ const AutoComplete = ({
     };
   }, [handleKeyDown]);
 
-  const handleSelectedHint = useCallback(
-    (item: Item) => {
-      setSelectedValueAndSync(item.value);
-      setTimeout(() => {
-        // needs to be timed out because the focus is just about to be lost after selecting the hint
-        inputRef.current?.focus();
-      });
-    },
-    [setSelectedValueAndSync]
-  );
+  const handleSelectedHint = useCallback((item: Item) => {
+    // do not use setSelectedValueAndSync here, because we don't want to submit the value
+    setInternalValue(item.value);
+    setDebouncedValueNoDelay(item.value);
+    // setHasInputFocus(false);
+    setTimeout(() => {
+      // Wrapping it in setTimeout is due to browser behaviour.
+      // It needs to be timed out because the native focus is just about to be lost
+      // after selecting the hint.
+      inputRef.current?.focus();
+    });
+  }, []);
 
   const shouldShowHints = hints.length > 0 && hasInputFocus;
 
@@ -170,7 +179,7 @@ const AutoComplete = ({
     <div className="autoComplete">
       <div>
         <label>
-          {label}
+          {label} {isLoading && '...'}
           <input
             ref={inputRef}
             className={`autoComplete__input ${shouldShowHints ? 'autoComplete__input--withHints' : ''}`}

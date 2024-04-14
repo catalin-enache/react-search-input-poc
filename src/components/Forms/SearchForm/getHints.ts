@@ -1,3 +1,6 @@
+// @ts-ignore
+import { getRandomChars } from 'lib/getRandomChars';
+
 export const getHints = async (value: string) => {
   const inputData = { inputString: value };
   // simulate a delay
@@ -17,8 +20,8 @@ export const generateFakeHints = async (inputString: string) => {
   // simulate a delay
   await new Promise((resolve) => setTimeout(resolve, 500));
   return [
-    `${inputString || 'default hint 1'} ### (fake)`,
-    `### ${inputString || 'default hint 2'} ### (fake)`,
-    `### ${inputString || 'default hint 3'} (fake)`
+    `${inputString || 'default hint 1'} ${getRandomChars(3)} (fake)`,
+    `${getRandomChars(3)} ${inputString || 'default hint 2'} ${getRandomChars(3)} (fake)`,
+    `${getRandomChars(3)} ${inputString || 'default hint 3'} (fake)`
   ];
 };
