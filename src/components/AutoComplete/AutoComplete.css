@@ -2,14 +2,34 @@
   position: relative;
 }
 
+.autoComplete__inputContainer {
+  position: relative;
+  --svgSize: calc(var(--formInputHeight)/1.5);
+}
+
+
 .autoComplete__input {
   width: 100%;
   height: var(--formInputHeight);
-  padding: 0 10px;
+  padding: 0 10px 0 26px;
   border: 1px solid #ccc;
   border-radius: var(--borderRadius);
   font-size: 16px;
   outline: none;
+}
+
+.autoComplete__inputIcon {
+  display: block;
+  position: absolute;
+  /* the icon position can be improved as a function of --formInputHeight */
+  top: 1px;
+  left: 6px;
+}
+
+.autoComplete__inputIcon svg {
+  width: var(--svgSize);
+  height: var(--svgSize);
+  color: gray;
 }
 
 .autoComplete__input--withHints {

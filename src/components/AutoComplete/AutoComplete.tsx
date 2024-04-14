@@ -3,9 +3,15 @@ import { useDebounce } from 'lib/hooks/useDebounce';
 import SelectableList, { Item } from 'components/SelectableList';
 import { useIsFirstRender } from 'lib/hooks/useIsFirstRender';
 import { useIsMounted } from 'lib/hooks/useIsMounted';
+import { highlightText } from 'lib/highlightText';
+import searchIconUrl from 'srcAssets/search.svg';
 import './AutoComplete.css';
 
 const DEBOUNCE_DELAY = 500;
+
+const formatHint = (highlights: string) => (hint: string) => (
+  <span dangerouslySetInnerHTML={{ __html: highlightText(hint, highlights) }} />
+);
 
 interface AutoCompleteProps {
   label?: string;
@@ -180,21 +186,28 @@ const AutoComplete = ({
       <div>
         <label>
           {label} {isLoading && '...'}
-          <input
-            ref={inputRef}
-            className={`autoComplete__input ${shouldShowHints ? 'autoComplete__input--withHints' : ''}`}
-            type="text"
-            value={internalValue}
-            onChange={handleInputChange}
-            placeholder="Search..."
-          />
+          <span className="autoComplete__inputContainer">
+            <input
+              ref={inputRef}
+              className={`autoComplete__input ${shouldShowHints ? 'autoComplete__input--withHints' : ''}`}
+              type="text"
+              value={internalValue}
+              onChange={handleInputChange}
+              placeholder="Search..."
+            />
+            <span className="autoComplete__inputIcon">
+              <svg>
+                <use href={`${searchIconUrl}#icon`} />
+              </svg>
+            </span>
+          </span>
         </label>
       </div>
       <div
         className={`autoComplete__hints ${shouldShowHints ? 'autoComplete__hints--visible' : ''}`}
       >
         <SelectableList
-          highlight={internalValue}
+          formatter={formatHint(internalValue)}
           items={hints}
           isVisible={shouldShowHints}
           onSelect={handleSelectedHint}

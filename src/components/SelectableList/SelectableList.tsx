@@ -1,5 +1,4 @@
-import { useState, memo, useEffect, useCallback } from 'react';
-import { highlightText } from 'lib/highlightText';
+import { useState, memo, useEffect, useCallback, ReactNode } from 'react';
 import './SelectableList.css';
 
 export type Item = { id: string; value: string };
@@ -8,14 +7,14 @@ interface SelectableListProps {
   items: Item[];
   onSelect: (item: Item) => void;
   isVisible?: boolean;
-  highlight?: string;
+  formatter?: (item: string) => ReactNode;
 }
 
 const SelectableList = ({
   items,
   onSelect,
   isVisible,
-  highlight = ''
+  formatter = (item) => item
 }: SelectableListProps) => {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
@@ -67,10 +66,9 @@ const SelectableList = ({
             onSelect(item);
           }}
           className={`selectableList__item ${selectedItem === item ? 'selectableList__item--selected' : ''}`}
-          dangerouslySetInnerHTML={{
-            __html: highlightText(item.value, highlight)
-          }}
-        />
+        >
+          {formatter(item.value)}
+        </li>
       ))}
     </ul>
   );
