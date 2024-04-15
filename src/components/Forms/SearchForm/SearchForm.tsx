@@ -62,6 +62,9 @@ const SearchForm = () => {
           </label>
         </div>
       </div>
+      <div className="searchForm__selectedValueContainer">
+        Search value: {selectedValue}
+      </div>
       <div className="searchForm__autocompleteContainer">
         {showAutoComplete && (
           <Suspense fallback={<div>Loading...</div>}>
