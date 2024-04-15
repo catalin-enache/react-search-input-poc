@@ -52,12 +52,13 @@ const SearchForm = () => {
         </div>
         <div>
           <label>
-            Use Server:
+            Use Server (localhost:3000):
             <input
               checked={useServer}
               type="checkbox"
               onChange={handleUseServerChange}
-            />
+            />{' '}
+            (falls back to fake hints if server is down)
           </label>
         </div>
       </div>

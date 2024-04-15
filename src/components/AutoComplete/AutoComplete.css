@@ -50,6 +50,7 @@
   border: 1px solid #ccc;
   border-bottom-left-radius: var(--borderRadius);
   border-bottom-right-radius: var(--borderRadius);
+  overflow: hidden; /* prevent hints to leak outside border radius */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 

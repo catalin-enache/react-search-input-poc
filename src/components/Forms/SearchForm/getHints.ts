@@ -28,15 +28,15 @@ export const getHints = async (value: string) => {
     const data = await response.json();
     requestStarted = false;
     return data.hints;
-  } catch (err) {
-    // @ts-ignore
+  } catch (err: any) {
     if (err.name === 'AbortError') {
       console.log('Fetch aborted');
     } else {
-      console.error('Another error occurred:', err);
+      console.log('Server is down:', err.message);
+      console.log('Falling back to fake hints');
     }
     requestStarted = false;
-    return [];
+    return generateFakeHints(value);
   }
 };
 

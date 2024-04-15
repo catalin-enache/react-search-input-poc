@@ -15,11 +15,13 @@ export default defineConfig({
   build: {
     outDir: '../dist',
     emptyOutDir: true,
-    sourcemap: true
+    sourcemap: true,
+    assetsInlineLimit: 0
   },
   resolve: {
     alias: {
       src: path.resolve(__dirname, './src'),
+      publicAssets: path.resolve(__dirname, './public/assets'),
       srcAssets: path.resolve(__dirname, './src/assets'),
       components: path.resolve(__dirname, './src/components'),
       lib: path.resolve(__dirname, './src/lib')

@@ -12,7 +12,7 @@ import { useIsFirstRender } from 'lib/hooks/useIsFirstRender';
 import { useIsMounted } from 'lib/hooks/useIsMounted';
 import { highlightText } from 'lib/highlightText';
 import { combineRefs } from 'lib/combineRefs';
-import searchIconUrl from 'srcAssets/search.svg';
+import searchIconUrl from 'publicAssets/search.svg';
 import './AutoComplete.css';
 
 const DEBOUNCE_DELAY = 300;

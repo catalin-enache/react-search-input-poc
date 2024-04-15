@@ -22,6 +22,7 @@
     "baseUrl": "./",
     "paths": {
       "src/*": ["src/*"],
+      "publicAssets/*": ["public/assets/*"],
       "srcAssets/*": ["src/assets/*"],
       "components/*": ["src/components/*"],
       "lib/*": ["src/lib/*"]
